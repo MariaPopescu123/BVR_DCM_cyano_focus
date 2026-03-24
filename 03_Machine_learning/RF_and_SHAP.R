@@ -24,7 +24,7 @@ for (d in dirs) {
 met_lags <- full_weekly_data |>
   filter(max_conc>20)|>
   select(Date, DCM_depth, precip_lag1, precip_lag2,
-         airtemp_lag1, airtemp_lag2,
+         airtemp_lag1, airtemp_lag1,
          wind_lag1, wind_lag2)
 depth_metRF <- var_importance_shap_plots(
   Xdataframe    = met_lags,
@@ -40,7 +40,7 @@ depth_metRF <- var_importance_shap_plots(
 met_lags <- full_weekly_data |>
   select(Date, max_conc,
          precip_lag1, precip_lag2,
-         airtemp_lag1, airtemp_lag2,
+         airtemp_lag1, airtemp_lag1,
          wind_lag1, wind_lag2)
 magnitudemetRF <- var_importance_shap_plots(
   Xdataframe     = met_lags,
@@ -84,7 +84,7 @@ depth_analysis_over20 <- full_weekly_data|>
     Date, DCM_depth,
     PZ, thermocline_depth, schmidt_stability, WaterLevel_m,
     depth_NH4_ugL_max,depth_NO3NO2_ugL_max,depth_SRP_ugL_max, depth_SFe_mgL_max,
-    airtemp_lag2, wind_lag2)
+    airtemp_lag1, wind_lag2)
 
 finaldepthRF_over20 <- var_importance_shap_plots(
   Xdataframe      = depth_analysis_over20,
@@ -223,7 +223,7 @@ vars_to_plot <- c(
   "N_at_DCM",
   "depth_NO3NO2_ugL_max",
   "wind_lag2",
-  "airtemp_lag2"
+  "airtemp_lag1"
 )
 
 plot_shap_vs_value_loop(

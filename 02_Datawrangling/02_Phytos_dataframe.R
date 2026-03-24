@@ -17,7 +17,7 @@ library(patchwork)
 
 #prepping phyto dataframe
 
-#adding columns with total_conc max and the depth at which it occurs
+#adding columns with Bluegreens_ugLgreens max and the depth at which it occurs
 phytos <- phytos_df %>% 
   filter(Reservoir == "BVR", Site == 50)%>%
   mutate(Date  = as_date(DateTime)) |> 
@@ -33,22 +33,22 @@ phytos <- read.csv("CSVs/phytos.csv")
 ####1. flora instrument data availability produces Figure S2####
 # 1. Build plotting data
 plot_dat <- phytos %>%
-  filter(!is.na(TotalConc_ugL)) %>%
+  filter(!is.na(Bluegreens_ugL)) %>%
   mutate(
     Year = year(Date),
     DayOfYear = yday(Date)
   ) %>%
-  select(Date, Year, Week, DayOfYear, TotalConc_ugL, Depth_m)
+  select(Date, Year, Week, DayOfYear, Bluegreens_ugL, Depth_m)
 
 # 2. For each Year, get the row with the max concentration
 max_totals_per_year <- plot_dat %>%
   group_by(Year) %>%
-  slice(which.max(TotalConc_ugL)) %>%
+  slice(which.max(Bluegreens_ugL)) %>%
   ungroup() %>%
   mutate(
     label_text = paste0(
       "Max: ",
-      round(TotalConc_ugL, 1), " µg/L at ",
+      round(Bluegreens_ugL, 1), " µg/L at ",
       Depth_m, " m"
     ),
     label_x = 211  # fixed DayOfYear position for text
@@ -134,9 +134,9 @@ DCM_metrics <- phytos |>
     Week,
     CastID,
     Depth_m,
-    TotalConc_ugL
+    Bluegreens_ugL
     # GreenAlgae_ugL,
-    #Bluegreens_ugL,
+    #Bluegreens_ugLgreens_ugL,
     # BrownAlgae_ugL,
     # MixedAlgae_ugL
   ) |>
@@ -148,10 +148,10 @@ DCM_metrics <- phytos |>
 # Get unique years in the dataset
 years <- unique(year(DCM_metrics$Date))
 
-types <- c("TotalConc_ugL"
+types <- c("Bluegreens_ugL"
            #,
           # "GreenAlgae_ugL",
-           #"Bluegreens_ugL"
+           #"Bluegreens_ugLgreens_ugL"
           # "BrownAlgae_ugL",
           # "MixedAlgae_ugL"
           )
@@ -211,7 +211,7 @@ DCM_metrics_filtered <- DCM_metrics |>
 
 ####3. Calculate DCM depth and magnitude####
 # Define pigment variables to loop over
-pigment_vars <- c("TotalConc_ugL") #if you want explore these "GreenAlgae_ugL", "Bluegreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
+pigment_vars <- c("Bluegreens_ugL") #if you want explore these "GreenAlgae_ugL", "Bluegreens_ugLgreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
 
 # Start from your filtered data
 DCM_metrics_depth <- DCM_metrics_filtered |> group_by(CastID)
@@ -244,10 +244,10 @@ DCM_metrics_depth2 <- DCM_metrics_depth1 %>%
   group_by(Reservoir, Site, Date, CastID) %>%
   mutate(
     top5_depth = 0.05 * WaterLevel_m,
-    top5_mean = mean(TotalConc_ugL[Depth_m <= top5_depth], na.rm = TRUE),
+    top5_mean = mean(Bluegreens_ugL[Depth_m <= top5_depth], na.rm = TRUE),
     qualifies_DCM =
-      TotalConc_ugL_DCM_depth > top5_depth &
-      TotalConc_ugL_max_conc >= 1.5 * top5_mean
+      Bluegreens_ugL_DCM_depth > top5_depth &
+      Bluegreens_ugL_max_conc >= 1.5 * top5_mean
   ) %>%
   ungroup() %>%
   filter(qualifies_DCM)
@@ -255,7 +255,7 @@ DCM_metrics_depth2 <- DCM_metrics_depth1 %>%
 #4. Visualize DCM metrics to ensure quality, not for publication####
 
 # Pigments to visualize (columns that have *_DCM_depth already computed)
-pigment_vars <- c("TotalConc_ugL") #, "GreenAlgae_ugL", "Bluegreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
+pigment_vars <- c("Bluegreens_ugL") #, "GreenAlgae_ugL", "Bluegreens_ugLgreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
 
 # Ensure output dir exists
 dir.create("Figs/raw_flora_casts", recursive = TRUE, showWarnings = FALSE)
@@ -279,7 +279,7 @@ for (var in pigment_vars) {
       geom_path() +
       # light grid every meter
       geom_hline(yintercept = seq(0, depth_max, by = 1),
-                 color = "lightblue", linetype = "dotted", linewidth = 0.3) +
+                 color = "blue", linetype = "dotted", linewidth = 0.3) +
       # DCM depth for this pigment
       geom_hline(aes(yintercept = .data[[dcm_col]]), color = "red") +
       # label the DCM depth on the right edge of each facet
@@ -306,8 +306,8 @@ for (var in pigment_vars) {
 
 
 final_DCM_metrics<- DCM_metrics_depth2|>
-  mutate(max_conc = TotalConc_ugL_max_conc, 
-         DCM_depth = TotalConc_ugL_DCM_depth)|>
+  mutate(max_conc = Bluegreens_ugL_max_conc, 
+         DCM_depth = Bluegreens_ugL_DCM_depth)|>
   filter(!(CastID == 1087))|> #no real peak
   filter(Year <2025) 
 
