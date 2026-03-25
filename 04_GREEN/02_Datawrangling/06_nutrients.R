@@ -50,7 +50,7 @@ chem_weekly_sum <- weekly_sum_variables(chem_interpolated3, variables)
 #join to frame with correct dates
 final_chem <- chem_weekly_sum
 
-write.csv(final_chem, "CSVs/final_chem.csv", row.names = FALSE)
+write.csv(final_chem, "04_GREEN/CSVs/final_chem.csv", row.names = FALSE)
 
 # 3. Prepare the SFe data ----------------
 metals_updated <- metalsdf |>
@@ -86,4 +86,4 @@ metals_weekly_sum <- weekly_sum_variables(metals_interpolated3, variables)
 
 final_metals <- metals_weekly_sum
 
-write.csv(final_metals, "CSVs/final_metals.csv", row.names = FALSE)
+write.csv(final_metals, "04_GREEN/CSVs/final_metals.csv", row.names = FALSE)

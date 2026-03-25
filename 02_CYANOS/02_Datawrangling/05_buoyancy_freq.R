@@ -29,4 +29,4 @@ buoyancy_with_dcm <- joined_df |>
 
 final_buoyancy <- buoyancy_with_dcm
 
-write.csv(final_buoyancy, "CSVs/final_buoyancy.csv", row.names = FALSE)
+write.csv(final_buoyancy, "02_CYANOS/CSVs/final_buoyancy.csv", row.names = FALSE)

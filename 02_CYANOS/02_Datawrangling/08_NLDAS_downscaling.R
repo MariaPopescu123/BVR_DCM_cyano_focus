@@ -81,7 +81,7 @@ EDImet_0 <- EDImet_wk |>
     .groups = "drop"
   )
 
-write.csv(EDImet_0, "CSVs/EDImet0.csv")
+write.csv(EDImet_0, "02_CYANOS/CSVs/EDImet0.csv")
 
 ####2 NLDAS met data####
 
@@ -89,19 +89,19 @@ write.csv(EDImet_0, "CSVs/EDImet0.csv")
 #for full repository https://github.com/hlwander/interannual_zoops/tree/a6f8b9f2fb2cacf09e5994eb7c0f73435cce9b89
 download.file(
   "https://raw.githubusercontent.com/hlwander/interannual_zoops/a6f8b9f2fb2cacf09e5994eb7c0f73435cce9b89/inputs/BVR_GLM_NLDAS_010113_123121_GMTadjusted.csv",
-  destfile = "CSVs/NLDAS.csv"
+  destfile = "02_CYANOS/CSVs/NLDAS.csv"
 )
 
 #another way to load in the data 
 # heathergeneratedNLDAS <- "https://raw.githubusercontent.com/hlwander/interannual_zoops/a6f8b9f2fb2cacf09e5994eb7c0f73435cce9b89/inputs/BVR_GLM_NLDAS_010113_123121_GMTadjusted.csv"
 # NLDAS <- read.csv(heathergeneratedNLDAS)
-# write.csv(NLDAS, "CSVs/NLDAS.csv", row.names = FALSE)
+# write.csv(NLDAS, "02_CYANOS/CSVs/NLDAS.csv", row.names = FALSE)
 
 #heather's precipitation is given in m per day
 #windspeed in m per day
 #air temp is hourly
 
-NLDAS <- read.csv("CSVs/NLDAS.csv")
+NLDAS <- read.csv("02_CYANOS/CSVs/NLDAS.csv")
   
   # ---- 1) Add Date/Year/Week + unit conversions (rowwise, before weekly QC) ----
   NLDAS_wk <- NLDAS %>%
@@ -249,8 +249,8 @@ p3 <- ggplot(full_met |> filter(Year == 2015),
 
 joined_data_2015 <- (p1 / p2 / p3) + plot_layout(heights = c(1,1,1)) 
 print(joined_data_2015)
-if (!dir.exists("Figs/metdata")) {
-  dir.create("Figs/metdata", recursive = TRUE)
+if (!dir.exists("02_CYANOS/Figs/metdata")) {
+  dir.create("02_CYANOS/Figs/metdata", recursive = TRUE)
 }
 
 
@@ -275,7 +275,7 @@ p3 <- ggplot(full_met, aes(x = Week, y = WindSpeed_Weekly_Average_m_s, color = f
 
 combined_plot <- (p1 | p2) / (p3)
 print(combined_plot)
-ggsave("Figs/metdata/NLDAS.png", combined_plot, width = 12, height = 8, dpi = 300)
+ggsave("02_CYANOS/Figs/metdata/NLDAS.png", combined_plot, width = 12, height = 8, dpi = 300)
 
 #checking to make sure I have full coverage for the time frame we are looking at 
 variables <- c("precip_weekly","weekly_airtempavg","WindSpeed_Weekly_Average_m_s")
@@ -283,4 +283,4 @@ data_availability(full_met, variables)
 
 
 ####9. Export as CSV####
-write.csv(full_met, "CSVs/final_metdata.csv", row.names = FALSE)
+write.csv(full_met, "02_CYANOS/CSVs/final_metdata.csv", row.names = FALSE)

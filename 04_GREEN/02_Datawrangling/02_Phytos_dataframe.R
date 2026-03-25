@@ -17,7 +17,7 @@ library(patchwork)
 
 #prepping phyto dataframe
 
-#adding columns with Bluegreens_ugLgreens max and the depth at which it occurs
+#adding columns with GreenAlgae_ugL max and the depth at which it occurs
 phytos <- phytos_df %>% 
   filter(Reservoir == "BVR", Site == 50)%>%
   mutate(Date  = as_date(DateTime)) |> 
@@ -27,28 +27,28 @@ phytos <- phytos_df %>%
   mutate(DOY = yday(Date))|>
   filter(year(Date) >2014, year(Date) <2025)
 
-write.csv(phytos, "CSVs/phytos.csv", row.names = FALSE)
-phytos <- read.csv("CSVs/phytos.csv")
+write.csv(phytos, "04_GREEN/CSVs/phytos.csv", row.names = FALSE)
+phytos <- read.csv("04_GREEN/CSVs/phytos.csv")
 
 ####1. flora instrument data availability produces Figure S2####
 # 1. Build plotting data
 plot_dat <- phytos %>%
-  filter(!is.na(Bluegreens_ugL)) %>%
+  filter(!is.na(GreenAlgae_ugL)) %>%
   mutate(
     Year = year(Date),
     DayOfYear = yday(Date)
   ) %>%
-  select(Date, Year, Week, DayOfYear, Bluegreens_ugL, Depth_m)
+  select(Date, Year, Week, DayOfYear, GreenAlgae_ugL, Depth_m)
 
 # 2. For each Year, get the row with the max concentration
 max_totals_per_year <- plot_dat %>%
   group_by(Year) %>%
-  slice(which.max(Bluegreens_ugL)) %>%
+  slice(which.max(GreenAlgae_ugL)) %>%
   ungroup() %>%
   mutate(
     label_text = paste0(
       "Max: ",
-      round(Bluegreens_ugL, 1), " µg/L at ",
+      round(GreenAlgae_ugL, 1), " µg/L at ",
       Depth_m, " m"
     ),
     label_x = 211  # fixed DayOfYear position for text
@@ -82,7 +82,7 @@ phytosplot <- ggplot(plot_dat, aes(x = DayOfYear, y = as.factor(Year), group = Y
   labs(
     x = "Day of Year",
     y = "Year",
-    title = "Fluoroprobe Data Availability 2015-2024"
+    title = "Fluoroprobe Data Availability 2015-2024 - Green Algae"
   ) +
   scale_x_continuous(
     breaks = seq(1, 365, by = 30),
@@ -96,10 +96,10 @@ phytosplot <- ggplot(plot_dat, aes(x = DayOfYear, y = as.factor(Year), group = Y
 #print(phytosplot)
 
 # Ensure output dir exists
-dir.create("Figs/Data_availability", recursive = TRUE, showWarnings = FALSE)
+dir.create("04_GREEN/Figs/Data_availability", recursive = TRUE, showWarnings = FALSE)
 
 ggsave(
-  "Figs/Data_availability/TotalPhytos2025pub.png",
+  "04_GREEN/Figs/Data_availability/TotalPhytos2025pub.png",
   phytosplot,
   width = 8,
   height = 6,
@@ -116,12 +116,12 @@ ggsave(
 #2. plots cast profiles for QAQC purposes to remove erroneous casts####
 
 # Make sure the Figs directory exists
-if (!dir.exists("Figs")) {
-  dir.create("Figs")
+if (!dir.exists("04_GREEN/Figs")) {
+  dir.create("04_GREEN/Figs")
 }
 
-if (!dir.exists("Figs/Phytos_viz")) {
-  dir.create("Figs/Phytos_viz")
+if (!dir.exists("04_GREEN/Figs/Phytos_viz")) {
+  dir.create("04_GREEN/Figs/Phytos_viz")
 }
 
 
@@ -134,10 +134,10 @@ DCM_metrics <- phytos |>
     Week,
     CastID,
     Depth_m,
-    Bluegreens_ugL
+    GreenAlgae_ugL
     # GreenAlgae_ugL,
-    #Bluegreens_ugLgreens_ugL,
-    # BrownAlgae_ugL,
+    #Bluegreens_ugL,
+    # GreenAlgae_ugL,
     # MixedAlgae_ugL
   ) |>
   group_by(Reservoir, Date, Site) |>
@@ -148,11 +148,11 @@ DCM_metrics <- phytos |>
 # Get unique years in the dataset
 years <- unique(year(DCM_metrics$Date))
 
-types <- c("Bluegreens_ugL"
+types <- c("GreenAlgae_ugL"
            #,
           # "GreenAlgae_ugL",
-           #"Bluegreens_ugLgreens_ugL"
-          # "BrownAlgae_ugL",
+           #"Bluegreens_ugL"
+          # "GreenAlgae_ugL",
           # "MixedAlgae_ugL"
           )
 # Loop over each type
@@ -179,11 +179,11 @@ for (type in types) {
       ggtitle(paste(yr, type, "raw casts"))
     
     # Create directory if it doesn't exist
-    dir.create("Figs/raw_flora_casts", recursive = TRUE, showWarnings = FALSE)
+    dir.create("04_GREEN/Figs/raw_flora_casts", recursive = TRUE, showWarnings = FALSE)
     
     # Save plot
     ggsave(
-      filename = paste0("Figs/raw_flora_casts/", type, "_", yr, "_raw_casts.png"),
+      filename = paste0("04_GREEN/Figs/raw_flora_casts/", type, "_", yr, "_raw_casts.png"),
       plot = plot_casts,
       width = 12,
       height = 10,
@@ -211,7 +211,7 @@ DCM_metrics_filtered <- DCM_metrics |>
 
 ####3. Calculate DCM depth and magnitude####
 # Define pigment variables to loop over
-pigment_vars <- c("Bluegreens_ugL") #if you want explore these "GreenAlgae_ugL", "Bluegreens_ugLgreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
+pigment_vars <- c("GreenAlgae_ugL") #if you want explore these "GreenAlgae_ugL", "Bluegreens_ugL", "GreenAlgae_ugL", "MixedAlgae_ugL"
 
 # Start from your filtered data
 DCM_metrics_depth <- DCM_metrics_filtered |> group_by(CastID)
@@ -244,10 +244,10 @@ DCM_metrics_depth2 <- DCM_metrics_depth1 %>%
   group_by(Reservoir, Site, Date, CastID) %>%
   mutate(
     top5_depth = 0.05 * WaterLevel_m,
-    top5_mean = mean(Bluegreens_ugL[Depth_m <= top5_depth], na.rm = TRUE),
+    top5_mean = mean(GreenAlgae_ugL[Depth_m <= top5_depth], na.rm = TRUE),
     qualifies_DCM =
-      Bluegreens_ugL_DCM_depth > top5_depth &
-      Bluegreens_ugL_max_conc >= 1.5 * top5_mean
+      GreenAlgae_ugL_DCM_depth > top5_depth &
+      GreenAlgae_ugL_max_conc >= 1.5 * top5_mean
   ) %>%
   ungroup() %>%
   filter(qualifies_DCM)
@@ -255,10 +255,10 @@ DCM_metrics_depth2 <- DCM_metrics_depth1 %>%
 #4. Visualize DCM metrics to ensure quality, not for publication####
 
 # Pigments to visualize (columns that have *_DCM_depth already computed)
-pigment_vars <- c("Bluegreens_ugL") #, "GreenAlgae_ugL", "Bluegreens_ugLgreens_ugL", "BrownAlgae_ugL", "MixedAlgae_ugL"
+pigment_vars <- c("GreenAlgae_ugL") #, "GreenAlgae_ugL", "Bluegreens_ugL", "GreenAlgae_ugL", "MixedAlgae_ugL"
 
 # Ensure output dir exists
-dir.create("Figs/raw_flora_casts", recursive = TRUE, showWarnings = FALSE)
+dir.create("04_GREEN/Figs/raw_flora_casts", recursive = TRUE, showWarnings = FALSE)
 
 for (var in pigment_vars) {
   dcm_col <- paste0(var, "_DCM_depth")
@@ -295,7 +295,7 @@ for (var in pigment_vars) {
       ggtitle(paste(yr, "-", var, "raw casts"))
     
     ggsave(
-      filename = paste0("Figs/raw_flora_casts/", var, "_", yr, "_raw_casts.png"),
+      filename = paste0("04_GREEN/Figs/raw_flora_casts/", var, "_", yr, "_raw_casts.png"),
       plot = plot_casts,
       width = 12,
       height = 10,
@@ -306,8 +306,8 @@ for (var in pigment_vars) {
 
 
 final_DCM_metrics<- DCM_metrics_depth2|>
-  mutate(max_conc = Bluegreens_ugL_max_conc, 
-         DCM_depth = Bluegreens_ugL_DCM_depth)|>
+  mutate(max_conc = GreenAlgae_ugL_max_conc, 
+         DCM_depth = GreenAlgae_ugL_DCM_depth)|>
   filter(!(CastID == 1087))|> #no real peak
   filter(Year <2025) 
 
@@ -359,7 +359,7 @@ depth_plot <- ggplot(boxplot_Data, aes(x = factor(Year), y = DCM_depth)) +
     name = "DCM Depth (m)",
     limits = c(10, 0)
   ) +
-  ggtitle("A   Deep Chlorophyll Maximum (DCM) Depth") +
+  ggtitle("A   Deep Chlorophyll Maximum (DCM) Depth - Green Algae") +
   labs(x = "Year", color = "Total Chl (µg/L)") +
   geom_text(
     data = label_data,
@@ -378,7 +378,7 @@ depth_plot <- ggplot(boxplot_Data, aes(x = factor(Year), y = DCM_depth)) +
 
 ####boxplots magnitude of DCM
 #visualizing just one box per year
-dir.create("Figs/Data_availability", recursive = TRUE, showWarnings = FALSE)
+dir.create("04_GREEN/Figs/Data_availability", recursive = TRUE, showWarnings = FALSE)
 
 boxplot_Data <- final_DCM_metrics |>
   mutate(Date = as.Date(Date)) |>
@@ -407,7 +407,7 @@ mag_plot <- ggplot(boxplot_Data, aes(x = factor(Year), y = max_conc)) +
     limits = c(0, 380),
     breaks = c(20, 100, 200, 300, 380)
   ) +
-  ggtitle("B   Deep Chlorophyll Maximum (DCM) Peak Magnitude") +
+  ggtitle("B   Deep Chlorophyll Maximum (DCM) Peak Magnitude - Green Algae") +
   scale_y_continuous(
     name = "Peak Chlorophyll (µg/L)",
     limits = c(0, 385)
@@ -436,7 +436,7 @@ panel_plot
 ggsave(
   filename = "boxplots_paneled.png",
   plot = panel_plot,
-  path = "Figs/Phytos_viz",
+  path = "04_GREEN/Figs/Phytos_viz",
   width = 10,   # width in inches
   height = 10,   # height in inches
   dpi = 600     # optional: high resolution
@@ -459,8 +459,8 @@ final_phytos <- final_DCM_metrics|>
 frame_weeks <- final_phytos|>
   distinct(Year, Week)
 
-write.csv(frame_weeks, "CSVs/frame_weeks.csv", row.names = FALSE)
-write.csv(final_phytos, "CSVs/final_phytos.csv", row.names = FALSE)
+write.csv(frame_weeks, "04_GREEN/CSVs/frame_weeks.csv", row.names = FALSE)
+write.csv(final_phytos, "04_GREEN/CSVs/final_phytos.csv", row.names = FALSE)
 #metrics for each variable that needs to be calculated 
 
 
@@ -600,11 +600,11 @@ p_mag_nolegend <- p_mag + theme(legend.position = "none")
 sig_both <- p_depth / p_mag_nolegend +
   plot_layout(guides = "collect") +   # collects the legend from p_depth
   plot_annotation(
-    title = "Year-wise Pairwise Significance (BH-adjusted)",
+    title = "Year-wise Pairwise Significance (BH-adjusted) - Green Algae",
     theme = theme(plot.title = element_text(face = "bold", hjust = 0.5))
   )
 
-ggsave("Figs/Phytos_viz/kruskal-wallis.png",
+ggsave("04_GREEN/Figs/Phytos_viz/kruskal-wallis.png",
        sig_both, width = 10, height = 12, dpi = 600, bg = "white")
 #warning is ok
 
@@ -649,7 +649,7 @@ d <- ggplot(summary_df, aes(x = factor(Year))) +
   labs(
     y = "DCM depth (m)",
     x = "Year",
-    title = "A   DCM Depth Median and Mean ± SE by Year"
+    title = "A   DCM Depth Median and Mean ± SE by Year - Green Algae"
   ) +
   theme_classic(base_size = 13) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -694,7 +694,7 @@ p <- ggplot(summary_df, aes(x = factor(Year))) +
   labs(
     y = "Max phytoplankton concentration",
     x = "Year",
-    title = "B   DCM Magnitude Median and Mean ± SE by Year"
+    title = "B   DCM Magnitude Median and Mean ± SE by Year - Green Algae"
   ) +
   theme_classic(base_size = 13) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -705,4 +705,4 @@ combined_plot <- d/p_no_legend+
   plot_layout(guides = "collect")
 
 # Save the plot to a file
-ggsave("Figs/Phytos_viz/phytoplankton_summary.png", plot = combined_plot, width = 8, height = 10, dpi = 600)
+ggsave("04_GREEN/Figs/Phytos_viz/phytoplankton_summary.png", plot = combined_plot, width = 8, height = 10, dpi = 600)

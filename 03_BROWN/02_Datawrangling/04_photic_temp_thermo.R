@@ -9,17 +9,17 @@
 library(ISOweek)
 
 #will save figures to these files
-if (!dir.exists("Figs/Daily_interp_Casts")) {
-  dir.create("Figs/Daily_interp_Casts", recursive = TRUE)
+if (!dir.exists("03_BROWN/Figs/Daily_interp_Casts")) {
+  dir.create("03_BROWN/Figs/Daily_interp_Casts", recursive = TRUE)
 }
 
-if (!dir.exists("Figs/Daily_interp_Casts")) {
-  dir.create("Figs/Daily_interp_Casts", recursive = TRUE)
+if (!dir.exists("03_BROWN/Figs/Daily_interp_Casts")) {
+  dir.create("03_BROWN/Figs/Daily_interp_Casts", recursive = TRUE)
 }
 
 #will save figures to these files
-if (!dir.exists("Figs/Thermocline")) {
-  dir.create("Figs/Thermocline", recursive = TRUE)
+if (!dir.exists("03_BROWN/Figs/Thermocline")) {
+  dir.create("03_BROWN/Figs/Thermocline", recursive = TRUE)
 }
 
 #### secchi PZ  ####
@@ -74,7 +74,7 @@ if (!dir.exists("Figs/Thermocline")) {
 }
 
 photic_zone_frame$Date <- ISOweek2date(paste0(photic_zone_frame$Year, "-W", sprintf("%02d", photic_zone_frame$Week), "-1"))
-write.csv(photic_zone_frame, "CSVs/photic_zone_frame.csv", row.names = FALSE)
+write.csv(photic_zone_frame, "03_BROWN/CSVs/photic_zone_frame.csv", row.names = FALSE)
 
 #diagnostic plot of photic zone depth from 2014-2025
 ggplot(photic_zone_frame, aes(x = Date, y = PZ)) +
@@ -314,7 +314,7 @@ for (yr in years) {
     ggtitle(paste(yr, "Temp Profiles"))
   
   # Save plot
-  ggsave(filename = paste0("Figs/Daily_interp_Casts/", yr, "_raw_casts.png"),
+  ggsave(filename = paste0("03_BROWN/Figs/Daily_interp_Casts/", yr, "_raw_casts.png"),
          plot = plot_casts,
          width = 12,
          height = 10,
@@ -357,7 +357,7 @@ for (yr in years) {
     ggtitle(paste(yr, "Temp Profiles"))
   
   # Save plot
-  ggsave(filename = paste0("Figs/Daily_interp_Casts/", yr, "_raw_casts.png"),
+  ggsave(filename = paste0("03_BROWN/Figs/Daily_interp_Casts/", yr, "_raw_casts.png"),
          plot = plot_casts,
          width = 12,
          height = 10,
@@ -506,7 +506,7 @@ for (yr in years) {
               color = "black", hjust = 1.1, size = 3)
   
   # Save plot
-  ggsave(filename = paste0("Figs/Thermocline/", yr, "_raw_casts.png"),
+  ggsave(filename = paste0("03_BROWN/Figs/Thermocline/", yr, "_raw_casts.png"),
          plot = plot_casts,
          width = 12,
          height = 10,
@@ -551,4 +551,4 @@ final_photic_thermo <- photic_zone_frame|>
 #To visualize availability 
 #data_availability(final_photic_thermo, "thermocline_depth")
 
-write.csv(final_photic_thermo, "CSVs/final_photic_thermo.csv", row.names = FALSE)
+write.csv(final_photic_thermo, "03_BROWN/CSVs/final_photic_thermo.csv", row.names = FALSE)

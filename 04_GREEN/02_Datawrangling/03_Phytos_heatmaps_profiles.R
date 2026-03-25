@@ -23,11 +23,11 @@ wl_weekly <- water_level %>%
 phytos_heatmaps <- DCM_metrics_filtered %>%
   left_join(wl_weekly, by = c("Week", "Year")) %>%
   mutate(
-    Bluegreens_ugL = ifelse(
-      Depth_m > WaterLevel_m, NA_real_, Bluegreens_ugL
+    GreenAlgae_ugL = ifelse(
+      Depth_m > WaterLevel_m, NA_real_, GreenAlgae_ugL
     )
   ) %>%
-  filter(!is.na(Bluegreens_ugL))
+  filter(!is.na(GreenAlgae_ugL))
 
 
 # 3) heatmap only framing the timeframe
@@ -35,7 +35,7 @@ phytos_heatmaps <- DCM_metrics_filtered %>%
 #to help set the scale for the heatmap
 global_max_val <- DCM_metrics_filtered %>%
   filter(Site == 50, Year >= 2015, Year <= 2024) %>%
-  summarise(max_val = max(Bluegreens_ugL, na.rm = TRUE)) %>%
+  summarise(max_val = max(GreenAlgae_ugL, na.rm = TRUE)) %>%
   pull(max_val)
 
 #Function to make heatmaps for total phytoplankton concentration visualization across time and depth
@@ -156,16 +156,16 @@ flora_heatmap <- function(
 # build all plots
 # Build all plots but only the last one keeps its legend
 plots <- list(
-  flora_heatmap(phytos_heatmaps, 2015, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2016, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2017, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2018, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2019, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2020, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2021, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2022, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2023, 50, "Bluegreens_ugL", "ug/L", global_max_val, FALSE),
-  flora_heatmap(phytos_heatmaps, 2024, 50, "Bluegreens_ugL", "ug/L", global_max_val, TRUE)   # only this keeps legend
+  flora_heatmap(phytos_heatmaps, 2015, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2016, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2017, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2018, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2019, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2020, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2021, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2022, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2023, 50, "GreenAlgae_ugL", "ug/L", global_max_val, FALSE),
+  flora_heatmap(phytos_heatmaps, 2024, 50, "GreenAlgae_ugL", "ug/L", global_max_val, TRUE)   # only this keeps legend
 )
 #warnings are ok
 
@@ -177,7 +177,7 @@ final_with_legend <-
   plot_annotation(theme = theme(legend.position = "right"))
 
 ggsave(
-  filename = "Figs/Phytos_viz/final_phytos_heatmap_plot.png",
+  filename = "04_GREEN/Figs/Phytos_viz/final_phytos_heatmap_plot.png",
   plot = final_with_legend,
   width = 20, height = 7, dpi = 300, bg = "white",
   device = ragg::agg_png   
@@ -202,7 +202,7 @@ casts <- phytos %>%
 # Max cast(s) per year
 max_phytos_annual <- phytos %>%
   group_by(Year) %>%
-  filter(Bluegreens_ugL == max(Bluegreens_ugL, na.rm = TRUE)) %>%
+  filter(GreenAlgae_ugL == max(GreenAlgae_ugL, na.rm = TRUE)) %>%
   ungroup()
 
 # Unique CastIDs for those max casts
@@ -226,10 +226,10 @@ plot_dat <- phytos %>%
   semi_join(sample_dat, by = c("Reservoir", "Date", "CastID")) %>%
   select(
     CastID, FacetID,
-    Bluegreens_ugL, Depth_m
+    GreenAlgae_ugL, Depth_m
   ) %>%
   pivot_longer(
-    cols = Bluegreens_ugL,
+    cols = GreenAlgae_ugL,
     names_to = "var",
     values_to = "ugL"
   )
@@ -252,12 +252,12 @@ plot_casts <- ggplot(plot_dat, aes(x = ugL, y = Depth_m, group = var)) +
   scale_color_manual(
     name = "Variable",
     values = c(
-      "Bluegreens_ugL" = "black"
+      "GreenAlgae_ugL" = "black"
     )
   ) +
   scale_size_manual(
     values = c(
-      "Bluegreens_ugL" = 0.8
+      "GreenAlgae_ugL" = 0.8
     ),
     guide = "none"
   ) +
@@ -276,7 +276,7 @@ plot_casts <- ggplot(plot_dat, aes(x = ugL, y = Depth_m, group = var)) +
 
 plot_casts
 
-ggsave("Figs/Phytos_viz/FP_casts_2025_just_totals.png",
+ggsave("04_GREEN/Figs/Phytos_viz/FP_casts_2025_just_totals.png",
        plot = plot_casts,
        width = 13, height = 7, units = "in",
        dpi = 600)  # high-res
@@ -302,7 +302,7 @@ casts <- phytos %>%
 # Max cast(s) per year
 max_phytos_annual <- phytos %>%
   group_by(Year) %>%
-  filter(Bluegreens_ugL == max(Bluegreens_ugL, na.rm = TRUE)) %>%
+  filter(GreenAlgae_ugL == max(GreenAlgae_ugL, na.rm = TRUE)) %>%
   ungroup()
 
 # Unique CastIDs for those max casts
@@ -326,11 +326,11 @@ plot_dat <- phytos %>%
   semi_join(sample_dat, by = c("Reservoir", "Date", "CastID")) %>%
   select(
     CastID, FacetID,
-    GreenAlgae_ugL, Bluegreens_ugL, BrownAlgae_ugL, MixedAlgae_ugL,
-    Bluegreens_ugL, Depth_m
+    GreenAlgae_ugL, GreenAlgae_ugL, Bluegreens_ugL, MixedAlgae_ugL,
+    TotalConc_ugL, Depth_m
   ) %>%
   pivot_longer(
-    cols = GreenAlgae_ugL:Bluegreens_ugL,
+    cols = GreenAlgae_ugL:TotalConc_ugL,
     names_to = "var",
     values_to = "ugL"
   )
@@ -355,18 +355,18 @@ plot_casts <- ggplot(plot_dat, aes(x = ugL, y = Depth_m, group = var)) +
     values = c(
       "GreenAlgae_ugL" = "green3",
       "Bluegreens_ugL" = "blue",
-      "BrownAlgae_ugL" = "orange",
+      "GreenAlgae_ugL" = "orange",
       "MixedAlgae_ugL" = "red",
-      "Bluegreens_ugL" = "black"
+      "TotalConc_ugL" = "black"
     )
   ) +
   scale_size_manual(
     values = c(
       "GreenAlgae_ugL" = 0.5,
       "Bluegreens_ugL" = 0.5,
-      "BrownAlgae_ugL" = 0.5,
+      "GreenAlgae_ugL" = 0.5,
       "MixedAlgae_ugL" = 0.5,
-      "Bluegreens_ugL" = 0.8
+      "TotalConc_ugL" = 0.8
     ),
     guide = "none"
   ) +
@@ -385,7 +385,7 @@ plot_casts <- ggplot(plot_dat, aes(x = ugL, y = Depth_m, group = var)) +
 
 plot_casts
 
-ggsave("Figs/Phytos_viz/FP_casts_2025.png",
+ggsave("04_GREEN/Figs/Phytos_viz/FP_casts_2025.png",
        plot = plot_casts,
        width = 13, height = 7, units = "in",
        dpi = 300)  # high-res

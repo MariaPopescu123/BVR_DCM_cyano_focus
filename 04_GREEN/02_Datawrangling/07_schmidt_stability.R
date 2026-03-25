@@ -73,4 +73,4 @@ schmidt_plot
 #warnings ok
 
 #this is the final dataframe that will be used in RF analysis
-write.csv(final_schmidt, here::here("CSVs", "final_schmidt.csv"), row.names = FALSE)
+write.csv(final_schmidt, here::here("04_GREEN", "CSVs", "final_schmidt.csv"), row.names = FALSE)

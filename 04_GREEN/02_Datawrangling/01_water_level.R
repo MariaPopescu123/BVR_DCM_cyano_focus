@@ -141,7 +141,7 @@ wtrlvl_by_year <- ggplot(water_level, aes(x = Week, y = WaterLevel_m, color = fa
 print(wtrlvl_by_year)
 
 #final csv
-write.csv(water_level, "CSVs/water_level.csv", row.names = FALSE)
+write.csv(water_level, "04_GREEN/CSVs/water_level.csv", row.names = FALSE)
 
 
 #additional stats for paper 

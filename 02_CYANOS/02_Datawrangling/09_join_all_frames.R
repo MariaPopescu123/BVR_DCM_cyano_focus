@@ -1,17 +1,17 @@
 #joining all the dataframes together from the data wrangling file
 
 #read in csvs
-frame_weeks <- read.csv("CSVs/frame_weeks.csv")
-final_phytos <- read.csv("CSVs/final_phytos.csv")
-final_metals <- read.csv("CSVs/final_metals.csv")|>
+frame_weeks <- read.csv("02_CYANOS/CSVs/frame_weeks.csv")
+final_phytos <- read.csv("02_CYANOS/CSVs/final_phytos.csv")
+final_metals <- read.csv("02_CYANOS/CSVs/final_metals.csv")|>
   select(-Date)
-final_photic_thermo <- read.csv("CSVs/final_photic_thermo.csv")|>
+final_photic_thermo <- read.csv("02_CYANOS/CSVs/final_photic_thermo.csv")|>
   select(-Date)
-final_buoyancy <- read.csv("CSVs/final_buoyancy.csv")
-final_chem <- read.csv("CSVs/final_chem.csv")|>
+final_buoyancy <- read.csv("02_CYANOS/CSVs/final_buoyancy.csv")
+final_chem <- read.csv("02_CYANOS/CSVs/final_chem.csv")|>
   select(-Date)
-final_schmidt <- read.csv("CSVs/final_schmidt.csv")
-final_metdata <- read.csv("CSVs/final_metdata.csv")
+final_schmidt <- read.csv("02_CYANOS/CSVs/final_schmidt.csv")
+final_metdata <- read.csv("02_CYANOS/CSVs/final_metdata.csv")
 
 full_weekly_data1 <- frame_weeks %>%
   left_join(final_phytos, by = c("Year", "Week")) %>%
@@ -41,5 +41,5 @@ full_weekly_data <- full_weekly_data1 |>
   filter(year(Date)>2014 & year(Date)<2025)
 
 
-write.csv(full_weekly_data, "CSVs/full_weekly_data.csv", row.names = FALSE)
+write.csv(full_weekly_data, "02_CYANOS/CSVs/full_weekly_data.csv", row.names = FALSE)
 

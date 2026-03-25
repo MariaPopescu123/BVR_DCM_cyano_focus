@@ -4,10 +4,10 @@
 # 3) summarizes statistics for Table S2 and Table S3
 
 
-full_weekly_data <- read.csv("CSVs/full_weekly_data.csv")
+full_weekly_data <- read.csv("04_GREEN/CSVs/full_weekly_data.csv")
 
-if (!dir.exists("Figs/correlations")){
-  dir.create("Figs/correlations")
+if (!dir.exists("04_GREEN/Figs/correlations")){
+  dir.create("04_GREEN/Figs/correlations")
 }
 
 ####visualize chosen variables####
@@ -141,8 +141,8 @@ full_weekly_data <- full_weekly_data|>
 
 check <- plot_correlation_matrix(
   full_weekly_data,
-  "Figs/correlations/full_corr_Matrix.png",
-  title = "Correlation Matrix Heatmap for Variable Selection", 
+  "04_GREEN/Figs/correlations/full_corr_Matrix.png",
+  title = "Correlation Matrix Heatmap for Variable Selection - Green Algae",
   variable_labels = variable_labels,
 )
 View(check$correlations)
@@ -206,7 +206,7 @@ tt <- ttheme_minimal(
 tbl_grob <- tableGrob(pairing_display, rows = NULL, theme = tt)
 
 ggsave(
-  filename = "Figs/correlations/thermal_pairing_table.png",
+  filename = "04_GREEN/Figs/correlations/thermal_pairing_table.png",
   plot = tbl_grob,
   width = 12, height = 3, units = "in", dpi = 300, bg = "white"
 )

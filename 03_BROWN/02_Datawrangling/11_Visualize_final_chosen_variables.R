@@ -202,7 +202,7 @@ row4 <- (
 p_final <- (row1 / row2 / row3 / row4) +
   plot_layout(guides = "collect") +
   plot_annotation(
-    title = "Seasonal Overlap (DOY 133 - 286) of Environmental and Depth Metrics",
+    title = "Seasonal Overlap (DOY 133 - 286) of Environmental and Depth Metrics - Brown Algae",
     theme = theme(
       legend.position = "right",
       legend.text = element_text(size = 16),
@@ -213,7 +213,7 @@ p_final <- (row1 / row2 / row3 / row4) +
   )
 
 ggsave(
-  filename = "Figs/all_variables_visualized.png",
+  filename = "03_BROWN/Figs/all_variables_visualized.png",
   plot = p_final,
   width = 20, height = 14, units = "in", dpi = 1200, bg = "white"
 )
@@ -233,35 +233,35 @@ stats_spine <- expand.grid(Year = 2015:2024, Week = 1:53) %>%
   select(Year, Week)
 
 # ── Read source CSVs ──
-stats_waterlevel <- read.csv("CSVs/water_level.csv") %>%
+stats_waterlevel <- read.csv("03_BROWN/CSVs/water_level.csv") %>%
   group_by(Year, Week) %>%
   slice(1) %>%
   ungroup() %>%
   select(Year, Week, WaterLevel_m)
 
-stats_photic  <- read.csv("CSVs/final_photic_thermo.csv") %>%
+stats_photic  <- read.csv("03_BROWN/CSVs/final_photic_thermo.csv") %>%
   select(Year, Week, PZ, thermocline_depth)
 
-stats_buoyancy <- read.csv("CSVs/final_buoyancy.csv") %>%
+stats_buoyancy <- read.csv("03_BROWN/CSVs/final_buoyancy.csv") %>%
   select(-any_of("Date"))
 
-stats_chem    <- read.csv("CSVs/final_chem.csv") %>%
+stats_chem    <- read.csv("03_BROWN/CSVs/final_chem.csv") %>%
   select(-any_of("Date"))
 
-stats_metals  <- read.csv("CSVs/final_metals.csv") %>%
+stats_metals  <- read.csv("03_BROWN/CSVs/final_metals.csv") %>%
   select(-any_of("Date"))
 
-stats_schmidt <- read.csv("CSVs/final_schmidt.csv") %>%
+stats_schmidt <- read.csv("03_BROWN/CSVs/final_schmidt.csv") %>%
   select(-any_of("Date"))
 
-stats_metdata <- read.csv("CSVs/final_metdata.csv") %>%
+stats_metdata <- read.csv("03_BROWN/CSVs/final_metdata.csv") %>%
   rename(
     AirTemp_Avg   = weekly_airtempavg,
     WindSpeed_Avg = WindSpeed_Weekly_Average_m_s,
     Precip_Weekly = precip_weekly
   )
 
-stats_phytos  <- read.csv("CSVs/final_phytos.csv") %>%
+stats_phytos  <- read.csv("03_BROWN/CSVs/final_phytos.csv") %>%
   select(Year, Week, DCM_depth, max_conc)
 
 # ── Join everything to full spine ──
@@ -329,7 +329,7 @@ overall_summary <- bind_rows(lapply(vars_to_use, function(v) {
   )
 }))
 
-write.csv(overall_summary, "CSVs/summary_statistics_overall.csv", row.names = FALSE)
+write.csv(overall_summary, "03_BROWN/CSVs/summary_statistics_overall.csv", row.names = FALSE)
 
 # ── Yearly stats ──
 yearly_stats <- bind_rows(lapply(vars_to_use, function(v) {
@@ -358,7 +358,7 @@ yearly_stats <- bind_rows(lapply(vars_to_use, function(v) {
     )
 }))
 
-write.csv(yearly_stats, "CSVs/yearly_variable_stats.csv", row.names = FALSE)
+write.csv(yearly_stats, "03_BROWN/CSVs/yearly_variable_stats.csv", row.names = FALSE)
 
 ####Yearly summary stats figure (Figure S_)####
 # Same layout as all_variables_visualized but:
@@ -452,7 +452,7 @@ yrow4 <- (
 p_yearly <- (yrow1 / yrow2 / yrow3 / yrow4) +
   plot_layout(guides = "collect") +
   plot_annotation(
-    title = "Yearly Median and Mean \u00b1 SD (DOY 133\u2013286)",
+    title = "Yearly Median and Mean \u00b1 SD (DOY 133\u2013286) - Brown Algae",
     theme = theme(
       legend.position = "right",
       legend.text = element_text(size = 16),
@@ -463,7 +463,7 @@ p_yearly <- (yrow1 / yrow2 / yrow3 / yrow4) +
   )
 
 ggsave(
-  filename = "Figs/all_variables_yearly_stats.png",
+  filename = "03_BROWN/Figs/all_variables_yearly_stats.png",
   plot = p_yearly,
   width = 20, height = 14, units = "in", dpi = 1200, bg = "white"
 )
